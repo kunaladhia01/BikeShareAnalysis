@@ -3,11 +3,18 @@ import pandas as pd        # For loading and processing the dataset
 from sklearn.model_selection import train_test_split
 import csv
 from math import *
+import plotly.plotly as py
+import plotly.tools as tls
+import matplotlib.pyplot as plt
+import plotly.graph_objs as go
+import plotly.io as pio
 
 PLAN_TYPES = [0, 30, 365]
 # load the data
 FILENAME = 'metro-bike-share-trip-data.csv'
 data = pd.read_csv(FILENAME)
+
+services = len(data[data['Ending Station ID'] == 3000]['Ending Station ID'])
 
 # drop unfixable and incomplete entries, as well as service repair entries
 data = data.dropna(thresh=13)
@@ -123,7 +130,7 @@ for i in range(len(split_data)):
 daily_stats = [] # count of rides per day
 hourly_stats = [0 for i in range(24)] # number of total rides for each of the 24 hours
 seasonal_type_stats = [[0, 0, 0] for i in range(4)] # seasons are periods of 3 months, data is [one-time, monthly, annual]
-split_counts = split_data[:] # count of rides by hour
+split_counts, day_counts = split_data[:], split_data[:] # count of rides by hour, count of rides by day
 for yr in range(len(split_data)):
 	sub1 = split_data[yr]
 	for mth in range(len(sub1)):
@@ -139,13 +146,56 @@ for yr in range(len(split_data)):
 				for i in range(len(PLAN_TYPES)):
 					seasonal_type_stats[int(mth/3)][i] += len(sub4[sub4['Plan Duration'] == PLAN_TYPES[i]])
 			daily_stats.append(sum(split_counts[yr][mth][day]))
+			day_counts[yr][mth][day] = sum(split_counts[yr][mth][day])
 
-avg_riders_daily = sum(daily_stats) / len(daily_stats)
+# average number of riders daily
+v_daily = [i for i in daily_stats if i]
+avg_riders_daily = sum(v_daily) / len(v_daily)
+
+# regular users (and average)
+reg_data = data[data['Plan Duration'] != 0]
+print(len(reg_data['Plan Duration'])/len(v_daily))
 
 valid_ridetimes = data[data['Ending Station ID'] != 3000]['Duration']
 avg_ride_time = sum(valid_ridetimes) / len(valid_ridetimes)
 print(avg_ride_time, avg_riders_daily)
 print(entries, avg_dist)
+print(day_counts)
 
+
+
+
+
+trace2 = go.Bar(x = np.arange(len(daily_stats)), y=daily_stats)
+dt1 = [trace2]
+layout1 = go.Layout(xaxis=dict(autorange=True, title = "Day"), yaxis=dict(autorange=True, title = "Number of Rides"))
+
+fig5 = go.Figure(data=dt1, layout=layout1)
+py.image.save_as({'data': fig5}, 'static/img/fig4.png')
+
+
+# reorder seasons so that they go in chronological order
+seasonal_type_stats = [seasonal_type_stats[2], seasonal_type_stats[3], seasonal_type_stats[0]]
+
+x = ['Summer 2016', 'Fall 2016', 'Winter 2017']
+y = [[seasonal_type_stats[i][j] for i in range(3)] for j in range(3)]
+y_labels = ['One-Time', 'Monthly', 'Annual']
+trace = [0 for i in range(3)]
+for i in range(3):
+	trace[i] = go.Bar(x=x,y=y[i],text=y[i],textposition = 'auto', name = y_labels[i],\
+		marker=dict(color=('rgb(%d,200,225)'%(158-50*i)), line=dict(color=\
+			'rgb(8,48,107)',width=1.5),),opacity=0.6)
+
+dt = [i for i in trace]
+py.image.save_as({'data': dt}, 'static/img/fig5.png')
+
+x_ = ['Bike Returned to Same Station', 'Bike Returned to Different Station', 'Service Repair']
+
+no_net_count = len(data[data['Net Distance'] == 0]['Net Distance'])
+y_ = [no_net_count, entries - no_net_count, services]
+trace7 = [go.Bar(x_ = x, y=y_, text = y_, textposition = 'auto',\
+ marker=dict(color='rgb(158,202,225)',line=dict(color='rgb(8,48,107)'\
+ 	,width=1.5),),opacity=0.6)]
+py.image.save_as({'data': trace7}, 'static/img/fig6.png')
 # export data
 #data.to_csv('out.csv')

@@ -7,6 +7,8 @@ import plotly.tools as tls
 import matplotlib.pyplot as plt
 import plotly.graph_objs as go
 import plotly.io as pio
+from PIL import Image
+import os
 #import geoplotlib
 from math import *
 days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -27,8 +29,14 @@ def check_date(year, month, day):
 			return True
 	return False
 
+def scale_image(img1):
+	# orig 640 by 480
+	new_im = Image.open('static/img/bacg.jpg')
+	img1 = img1.resize((640*2,480*2), Image.ANTIALIAS)
+	new_im.paste(img1, ((1900 - 640*2) // 2, (1080 - 480*2) // 2))
+	return new_im
 
-def generate_visuals(y, m, d):
+def generate_visuals(y, m, d, k=0):
 	# load and split data
 	data = pd.read_csv('out.csv')
 	data = data[data['Start Year'] == y]
@@ -40,34 +48,20 @@ def generate_visuals(y, m, d):
 	stat_counts = [len(hourly[i]['Start Hour']) for i in range(24)]
 	plan_dist = [[hourly[i][hourly[i]['Plan Duration'] == PLAN_TYPES[j]] for j in range(3)] for i in range(24)]
 	dist_counts = [[len(plan_dist[i][j]['Plan Duration']) for j in range(3)] for i in range(24)]
-
 	# plot for hourly stats by passholder type
 	ind = np.arange(24)
-	width = 0.5
-	mpl_fig = plt.figure()
-	ax = mpl_fig.add_subplot(111)
-	p1 = ax.bar(ind, [dist_counts[i][0] for i in ind], width, color=(0.2588,0.4433,1.0))
-	p2 = ax.bar(ind, [dist_counts[i][1] for i in ind], width, color=(1.0,0.5,0.62),
-	             bottom=[dist_counts[i][0] for i in ind])
-	p3 = ax.bar(ind, [dist_counts[i][2] for i in ind], width, color=(0.33,0.33,0.33),
-	             bottom=[dist_counts[i][1] for i in ind])
-	ax.set_ylabel('Number of Rides')
-	ax.set_xlabel('Hour')
-	ax.set_title('Number of Rides by Passholder Type per Hour')
-
-	ax.set_xticks(ind)
-	ax.set_yticks(np.arange(0, max(stat_counts) + 5, 10))
-	ax.set_xticklabels(('G1', 'G2', 'G3', 'G4', 'G5'))
-
-	plotly_fig = tls.mpl_to_plotly( mpl_fig )
-
-	plotly_fig["layout"]["showlegend"] = True
-	plotly_fig["data"][0]["name"] = "One-Time"
-	plotly_fig["data"][1]["name"] = "Monthly"
-	plotly_fig["data"][2]["name"] = "Annual"
-
-	py.image.save_as({'data': plotly_fig}, 'static/img/fig1.png')
-
+	trace0 = (go.Bar(x=ind,y=[dist_counts[i][0] for i in ind],name='One Time'))
+	trace1 = (go.Bar(x=ind,y=[dist_counts[i][1] for i in ind],name='Monthly'))
+	trace2 = (go.Bar(x=ind,y=[dist_counts[i][2] for i in ind],name='Annual'))
+	_data = [trace0, trace1, trace2]
+	layout = go.Layout(title = "Number of Rides by Passholder Type per Hour", barmode = 'stack')
+	fig = go.Figure(data=_data, layout=layout)
+	os.remove('static/img/fig1.png')
+	py.image.save_as({'data': fig}, 'static/img/fig1.png')
+	im1 = Image.open('static/img/fig1.png')
+	im1 = scale_image(im1)
+	os.remove('static/img/fig111.png')
+	im1.save('static/img/fig111.png')
 	# plot for amount of bikes entering and leaving 15 most active stations
 
 	# gather data
@@ -85,10 +79,14 @@ def generate_visuals(y, m, d):
 	trace1 = go.Bar(x=["ID: " + str(i) for i in locs1], y=[i[0] for i in lfreqs], name ='Starting Location')
 	trace2 = go.Bar(x=["ID: " + str(i) for i in locs1], y=[i[1] for i in lfreqs], name ='Ending Location')
 	dt = [trace1, trace2]
-	layout = go.Layout(barmode='group', xaxis = dict(title = "Starting Location ID"), yaxis = dict(title = "Number of Rides"))
+	layout = go.Layout(title = "Number of Rides by Station ID", barmode='group', xaxis = dict(title = "Station Location ID"), yaxis = dict(title = "Number of Rides"))
 	fig = go.Figure(data=dt, layout=layout)
+	os.remove('static/img/fig2.png')
 	py.image.save_as({'data': fig}, 'static/img/fig2.png')
-	
+	im2 = Image.open('static/img/fig2.png')
+	im2 = scale_image(im2)
+	os.remove('static/img/fig222.png')
+	im2.save('static/img/fig222.png')
 
 	# plot for number of rides by duration, not including servicing
 	new_data = data[data['Ending Station ID'] != 3000]
@@ -103,10 +101,15 @@ def generate_visuals(y, m, d):
 
 	trace2 = go.Bar(x=[str(30*i)+" to "+str(30*(i+1)) for i in range(len(dur_freq))], y=dur_freq)
 	dt1 = [trace2]
-	layout1 = go.Layout(xaxis=dict(autorange=True, title = "Duration Interval (Minutes)"), yaxis=dict(type='log', autorange=True, title = "Number of Rides"))
+	layout1 = go.Layout(title = "Number of Rides by Trip Duration", xaxis=dict(autorange=True, title = "Duration Interval (Minutes)"), yaxis=dict(type='log', autorange=True, title = "Number of Rides"))
 
 	fig2 = go.Figure(data=dt1, layout=layout1)
+	os.remove('static/img/fig3.png')
 	py.image.save_as({'data': fig2}, 'static/img/fig3.png')
+	im3 = Image.open('static/img/fig3.png')
+	im3 = scale_image(im3)
+	os.remove('static/img/fig333.png')
+	im3.save('static/img/fig333.png')
 
 
 

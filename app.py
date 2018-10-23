@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect
 from gen import generate_visuals, check_date
+from flask_cache_buster import CacheBuster
 
 app = Flask(__name__)
 MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -38,5 +39,14 @@ def stats(date):
 	return render_template('ind_stats.html', message = date)
 
 
+# No caching at all for API endpoints.
+@app.after_request
+def add_header(response):
+    # response.cache_control.no_store = True
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0' 
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    return response
 if __name__ == "__main__":
 	app.run()
+
