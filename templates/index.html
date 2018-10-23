@@ -15,7 +15,7 @@
 
     <!-- Custom fonts for this template -->
     <link href="{{ url_for('static', filename="vendor/fontawesome-free/css/all.min.css") }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename="https://fonts.googleapis.com/css?family=Varela+Round") }}" rel="stylesheet">
+    <link href=https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
     <!-- Custom styles for this template -->
@@ -85,12 +85,12 @@
         <!-- Featured Project Row -->
         <div class="row align-items-center no-gutters mb-4 mb-lg-5">
           <div class="col-xl-8 col-lg-7">
-            <img class="img-fluid mb-3 mb-lg-0" src='' alt="">
+            <img class="img-fluid mb-3 mb-lg-0" src="{{ url_for('static', filename="img/fig6.png") }}" alt="">
           </div>
           <div class="col-xl-4 col-lg-5">
             <div class="featured-text text-center text-lg-left">
               <h4>Location Analysis</h4>
-              <p class="text-black-50 mb-0">A total of 131,349 valid ride entries in the provided data set lasted an average of 22.6 minutes and covered an average net distance of 0.62 kilometers (determined using the Haversine formula). Station 3069 was the most popular start station, while Station 3005 was the most popular end station. About 490 people use the Bike Share service daily, and the hourly data can be used to determine the net change of bikes at a station over the course of a day. </p>
+              <p class="text-black-50 mb-0">A total of 131,349 valid ride entries in the provided data set lasted an average of 22.6 minutes and covered an average net distance of 0.62 kilometers (determined using the Haversine formula). Station 3069 was the most popular start station, while Station 3005 was the most popular end station. About 490 people use the Bike Share service daily, and the hourly data can be used to determine the net change of bikes at a station over the course of a day. Enter a date at the bottom of the page to see the net change of bikes at each station per hour.</p>
             </div>
           </div>
         </div>
@@ -105,7 +105,7 @@
               <div class="d-flex h-100">
                 <div class="project-text w-100 my-auto text-center text-lg-left">
                   <h4 class="text-white">Seasonal Analysis</h4>
-                  <p class="mb-0 text-white-50">The data set spanned rides from July 2016 to March 2017, spanning three seasons (Summer, Fall, and Winter). </p>
+                  <p class="mb-0 text-white-50">The data set spanned rides from July 2016 to March 2017, spanning three seasons (Summer, Fall, and Winter). The monthly pass is clearly the most popular for all three seasons. This is most likely because regular users of the service purchase the pass a month at a time depending on the weather trends for the month. The one-time pass is most likely used heavily by tourists, while the the annual pass is rare. </p>
                   <hr class="d-none d-lg-block mb-0 ml-0">
                 </div>
               </div>
@@ -123,7 +123,7 @@
               <div class="d-flex h-100">
                 <div class="project-text w-100 my-auto text-center text-lg-right">
                   <h4 class="text-white">Overall Analysis</h4>
-                  <p class="mb-0 text-white-50">About 490 people use the Bike Share service daily, while 338 riders use bike sharing as a regular part of their commute. The observable spike in the graph of the data by day to the right occurred on October 16th, 2016 (1477 rides).</p>
+                  <p class="mb-0 text-white-50">About 490 people use the Bike Share service daily, while 338 riders use bike sharing as a regular part of their commute. The observable spike in the graph of the data by day to the right occurred on October 16th, 2016 (1477 rides). The overall trend matches the seasonal trend above, with rides peaking during the Summer and wavering during the Winter.</p>
                   <hr class="d-none d-lg-block mb-0 mr-0">
                 </div>
               </div>
@@ -201,7 +201,7 @@
     <!-- Footer -->
     <footer class="bg-black small text-center text-white-50">
       <div class="container">
-        Copyright &copy; Your Website 2018
+        For the Capital One Winter Summit, 2018
       </div>
     </footer>
 
