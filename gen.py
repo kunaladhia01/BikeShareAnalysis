@@ -23,13 +23,13 @@ locs = sorted([3014, 3016, 3032, 3021, 3054, 3022, 3076, 3005, 3031, 3078,\
      3011, 3048, 3081, 3024, 3082, 4108, 3000, 3009, 3039])
 
 
-def check_date(year, month, day):
+def check_date(year, month, day): # checks if date entered is within the span of the dataset
 	if year == 2016 and (month > 7 or month == 7 and day > 6) or (year == 2017 and month < 4):
 		if day <= days[month-1]:
 			return True
 	return False
 
-def scale_image(img1):
+def scale_image(img1): # create image of right size for new page
 	# orig 640 by 480
 	new_im = Image.open('static/img/bacg.jpg')
 	img1 = img1.resize((640*2,480*2), Image.ANTIALIAS)
@@ -45,13 +45,15 @@ def generate_visuals(y, m, d, k=0):
 
 	dtstr = str(y) + str(m) + str(d) + '.png'
 
-	print ("dtstrt " ,dtstr)
 	hourly = [data[data['Start Hour'] == x] for x in range(24)]
 
 	# extract statistics
 	stat_counts = [len(hourly[i]['Start Hour']) for i in range(24)]
 	plan_dist = [[hourly[i][hourly[i]['Plan Duration'] == PLAN_TYPES[j]] for j in range(3)] for i in range(24)]
 	dist_counts = [[len(plan_dist[i][j]['Plan Duration']) for j in range(3)] for i in range(24)]
+
+
+	#########################################################################################
 	# plot for hourly stats by passholder type
 	ind = np.arange(24)
 	trace0 = (go.Bar(x=ind,y=[dist_counts[i][0] for i in ind],name='One Time'))
@@ -79,6 +81,8 @@ def generate_visuals(y, m, d, k=0):
 	im1.save('static/img/fig111' + dtstr)
 	# plot for amount of bikes entering and leaving 15 most active stations
 
+	###########################################################################################
+
 	# gather data
 	locs1 = locs[:]
 	lfreqs = [[len(data[data['Starting Station ID'] == i]['Starting Station ID']),\
@@ -102,7 +106,6 @@ def generate_visuals(y, m, d, k=0):
 	except:
 		pass
 	##py.image.save_as({'data': fig}, 'static/img/fig2.png')
-	print("saving fig2",dtstr)
 	py.image.save_as({'data': fig}, 'static/img/fig2' + dtstr)
 	##im2 = Image.open('static/img/fig2.png')
 	im2 = Image.open('static/img/fig2' + dtstr)
@@ -113,19 +116,19 @@ def generate_visuals(y, m, d, k=0):
 	except:
 		pass
 	##im2.save('static/img/fig222.png')
-	print ("saving fig222", dtstr)
 	im2.save('static/img/fig222' + dtstr)
+
+
+	######################################################################################
 
 	# plot for number of rides by duration, not including servicing
 	new_data = data[data['Ending Station ID'] != 3000]
 	dur_freq = [len(new_data[new_data['Duration'] // 60 == i]['Duration']) for i in range(60*24)]
-	print(dur_freq)
 	# group by 30 - minute intervals
 	dur_freq = [sum(dur_freq[30*i:30*(i+1)]) for i in range(48)]
 	# drop unnecessary and outlier end values
 	while dur_freq[-1] == 0 or dur_freq.count(0) > 5:
 		dur_freq.pop()
-	print(dur_freq)
 
 	trace2 = go.Bar(x=[str(30*i)+" to "+str(30*(i+1)) for i in range(len(dur_freq))], y=dur_freq)
 	dt1 = [trace2]
@@ -148,7 +151,6 @@ def generate_visuals(y, m, d, k=0):
 	except:
 		pass
 	##im3.save('static/img/fig333.png')
-	print ("saving fig333",dtstr)
 	im3.save('static/img/fig333' + dtstr)
 
 

@@ -38,7 +38,7 @@ data['End Day'] = data['End Time'].apply(lambda x: int(str(x)[8:10]))
 data['End Hour'] = data['End Time'].apply(lambda x: int(str(x)[11:13]))
 data['End Minute'] = data['End Time'].apply(lambda x: int(str(x)[14:16]))
 
-# distance column using Haversine Formula
+
 
 # fill in coordinates for entries with ID's but blank coordinates
 loc_map = {} # maps ID to coordinates
@@ -66,7 +66,7 @@ for i in missing_coords[1]:
 	data['Ending Station Latitude'][i] = loc_map[int(data['Ending Station ID'][i])][0]
 	data['Ending Station Longitude'][i] = loc_map[int(data['Ending Station ID'][i])][1]		
 
-	
+
 # calculate distances for each trip using the Haversine formula
 
 R = 6373.0
@@ -84,9 +84,13 @@ for i in range(entries):
 
 data['Net Distance'] = np.array(distances)
 
+
+############################# Stats Generators ####################################################
+
 # earliest and latest entries
 earliest, latest = min(data['Start Time']), max(data['End Time'])
-print(earliest, latest)
+
+
 # frequency that each location is used for starting/ending trip
 
 #starting
@@ -98,8 +102,8 @@ unique, counts = np.unique(data['Ending Station ID'], return_counts=True)
 freq_end = dict(zip(unique, counts))
 
 # most popular starting and ending locations
-print(max(freq_start, key = lambda x: freq_start[x]))
-print(max(freq_end, key = lambda x: freq_end[x]))
+pop_s = (max(freq_start, key = lambda x: freq_start[x]))
+pop_e = (max(freq_end, key = lambda x: freq_end[x]))
 
 # distance statistics
 valids = data.loc[data['Net Distance'].notnull()]['Net Distance']
@@ -155,17 +159,16 @@ avg_riders_daily = sum(v_daily) / len(v_daily)
 
 # regular users (and average)
 reg_data = data[data['Plan Duration'] != 0]
-print(len(reg_data['Plan Duration'])/len(v_daily))
 
 valid_ridetimes = data[data['Ending Station ID'] != 3000]['Duration']
 avg_ride_time = sum(valid_ridetimes) / len(valid_ridetimes)
-print(avg_ride_time, avg_riders_daily)
-print(entries, avg_dist)
-print(day_counts)
 
 
+# generate graphs for homepage
 
+######################################################################
 
+# Overall Analysus
 
 trace2 = go.Bar(x = np.arange(len(daily_stats)), y=daily_stats)
 dt1 = [trace2]
@@ -174,6 +177,9 @@ layout1 = go.Layout(xaxis=dict(autorange=True, title = "Day"), yaxis=dict(autora
 fig5 = go.Figure(data=dt1, layout=layout1)
 py.image.save_as({'data': fig5}, 'static/img/fig4.png')
 
+######################################################################
+
+#Seasonal Analysis
 
 # reorder seasons so that they go in chronological order
 seasonal_type_stats = [seasonal_type_stats[2], seasonal_type_stats[3], seasonal_type_stats[0]]
@@ -190,6 +196,11 @@ for i in range(3):
 dt = [i for i in trace]
 py.image.save_as({'data': dt}, 'static/img/fig5.png')
 
+######################################################################
+
+
+#Location Analysis
+
 x_ = ['No Net Distance', 'Some Net Distance', 'Service Repair']
 
 no_net_count = len(data[data['Net Distance'] == 0]['Net Distance'])
@@ -198,5 +209,7 @@ trace7 = [go.Bar(x = x_ , y=y_, text = y_, textposition = 'auto',\
  marker=dict(color='rgb(158,202,225)',line=dict(color='rgb(8,48,107)'\
  	,width=1.5),),opacity=0.6)]
 py.image.save_as({'data': trace7}, 'static/img/fig6.png')
+
+
 # export data
-#data.to_csv('out.csv')
+data.to_csv('out.csv')

@@ -6,35 +6,36 @@ import sys,os
 app = Flask(__name__)
 MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
-
+# Cache buster (for loading images for different dates)
 config = { 'extensions': ['.js', '.css', '.csv','.png'], 'hash_size': 5 }
 cache_buster = CacheBuster(config=config)
 cache_buster.init_app(app)
 
-
+# Home page
 @app.route("/",  methods=['post', 'get'])
 def index():
 	message = ''
-	if request.method == 'POST':
-		redr = request.form.get('spec')
+	if request.method == 'POST': # Visuals for date requested
+		redr = request.form.get('spec') # Date String (MM/DD/YYYY)
 		print(redr)
 		try:
+			# extract months
 			month = int(redr[:2])
 			day = int(redr[3:5])
 			year = int(redr[6:10])
 
+			# String for images (cache busting)
 			dtstr = str(year) + str(month) + str(day) + '.png'
 
 			# check if day is within parameters
 			if check_date(year, month, day):
-				generate_visuals(year, month, day)
+				generate_visuals(year, month, day) # create graphs
 				date = MONTHS[month - 1] + " " + str(day) + ", " + str(year)
-				print("EFGH")
-				return redirect('/daily-stats/' + date + '/' + dtstr)
-			else:
+				return redirect('/daily-stats/' + date + '/' + dtstr)  # redirect to new page
+			else: # bad date
 				return render_template('index.html', message = "No data available for this day.")
 
-		except Exception as e:
+		except Exception as e: # exception handling
 			print (str(e))
 			exc_type, exc_obj, exc_tb = sys.exc_info()
 			fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
@@ -42,6 +43,7 @@ def index():
 
 			try:
 				station = int(redr)
+				return render_template('index.html', message = "Not a valid date format.")
 
 			except:
 				return render_template('index.html', message = "Invalid Search!")
