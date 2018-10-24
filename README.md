@@ -23,7 +23,3 @@ In general:
 2. Please don't try out too many different dates! The Plotly account used to generate the graphs is a trial account, meaning only 100 graphs can be created per 24 hour period (so 33 different dates can be tested within a day).
 
 3. There are many (seemingly unnecessary) blocks of code for cache busting, a well-known issue with Flask. These steps (like the filenames for images) are necessary to overcome this issue.
-
-
-
-Thank you for reviewing my project!
