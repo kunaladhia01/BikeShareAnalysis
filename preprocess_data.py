@@ -1,3 +1,4 @@
+
 import numpy as np
 import pandas as pd        # For loading and processing the dataset
 from sklearn.model_selection import train_test_split
@@ -189,11 +190,11 @@ for i in range(3):
 dt = [i for i in trace]
 py.image.save_as({'data': dt}, 'static/img/fig5.png')
 
-x_ = ['Bike Returned to Same Station', 'Bike Returned to Different Station', 'Service Repair']
+x_ = ['No Net Distance', 'Some Net Distance', 'Service Repair']
 
 no_net_count = len(data[data['Net Distance'] == 0]['Net Distance'])
 y_ = [no_net_count, entries - no_net_count, services]
-trace7 = [go.Bar(x_ = x, y=y_, text = y_, textposition = 'auto',\
+trace7 = [go.Bar(x = x_ , y=y_, text = y_, textposition = 'auto',\
  marker=dict(color='rgb(158,202,225)',line=dict(color='rgb(8,48,107)'\
  	,width=1.5),),opacity=0.6)]
 py.image.save_as({'data': trace7}, 'static/img/fig6.png')

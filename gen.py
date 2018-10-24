@@ -42,6 +42,10 @@ def generate_visuals(y, m, d, k=0):
 	data = data[data['Start Year'] == y]
 	data = data[data['Start Month'] == m]
 	data = data[data['Start Day'] == d]
+
+	dtstr = str(y) + str(m) + str(d) + '.png'
+
+	print ("dtstrt " ,dtstr)
 	hourly = [data[data['Start Hour'] == x] for x in range(24)]
 
 	# extract statistics
@@ -56,12 +60,23 @@ def generate_visuals(y, m, d, k=0):
 	_data = [trace0, trace1, trace2]
 	layout = go.Layout(title = "Number of Rides by Passholder Type per Hour", barmode = 'stack')
 	fig = go.Figure(data=_data, layout=layout)
-	os.remove('static/img/fig1.png')
-	py.image.save_as({'data': fig}, 'static/img/fig1.png')
-	im1 = Image.open('static/img/fig1.png')
+	try:
+		##os.remove('static/img/fig1.png')
+		os.remove('static/img/fig1' + dtstr)
+	except:
+		pass
+	##py.image.save_as({'data': fig}, 'static/img/fig1.png')
+	py.image.save_as({'data': fig}, 'static/img/fig1' + dtstr)
+	##im1 = Image.open('static/img/fig1.png')
+	im1 = Image.open('static/img/fig1' + dtstr)
 	im1 = scale_image(im1)
-	os.remove('static/img/fig111.png')
-	im1.save('static/img/fig111.png')
+	try:
+		##os.remove('static/img/fig111.png' + dtstr)
+		os.remove('static/img/fig111' + dtstr)
+	except:
+		pass
+	##im1.save('static/img/fig111.png')
+	im1.save('static/img/fig111' + dtstr)
 	# plot for amount of bikes entering and leaving 15 most active stations
 
 	# gather data
@@ -81,12 +96,25 @@ def generate_visuals(y, m, d, k=0):
 	dt = [trace1, trace2]
 	layout = go.Layout(title = "Number of Rides by Station ID", barmode='group', xaxis = dict(title = "Station Location ID"), yaxis = dict(title = "Number of Rides"))
 	fig = go.Figure(data=dt, layout=layout)
-	os.remove('static/img/fig2.png')
-	py.image.save_as({'data': fig}, 'static/img/fig2.png')
-	im2 = Image.open('static/img/fig2.png')
+	try:
+		##os.remove('static/img/fig2.png')
+		os.remove('static/img/fig2' + dtstr)
+	except:
+		pass
+	##py.image.save_as({'data': fig}, 'static/img/fig2.png')
+	print("saving fig2",dtstr)
+	py.image.save_as({'data': fig}, 'static/img/fig2' + dtstr)
+	##im2 = Image.open('static/img/fig2.png')
+	im2 = Image.open('static/img/fig2' + dtstr)
 	im2 = scale_image(im2)
-	os.remove('static/img/fig222.png')
-	im2.save('static/img/fig222.png')
+	try:
+		##os.remove('static/img/fig222.png')
+		os.remove('static/img/fig222' + dtstr)
+	except:
+		pass
+	##im2.save('static/img/fig222.png')
+	print ("saving fig222", dtstr)
+	im2.save('static/img/fig222' + dtstr)
 
 	# plot for number of rides by duration, not including servicing
 	new_data = data[data['Ending Station ID'] != 3000]
@@ -104,14 +132,23 @@ def generate_visuals(y, m, d, k=0):
 	layout1 = go.Layout(title = "Number of Rides by Trip Duration", xaxis=dict(autorange=True, title = "Duration Interval (Minutes)"), yaxis=dict(type='log', autorange=True, title = "Number of Rides"))
 
 	fig2 = go.Figure(data=dt1, layout=layout1)
-	os.remove('static/img/fig3.png')
-	py.image.save_as({'data': fig2}, 'static/img/fig3.png')
-	im3 = Image.open('static/img/fig3.png')
+	try:
+		##os.remove('static/img/fig3.png')
+		os.remove('static/img/fig3' + dtstr)
+	except:
+		pass
+	##py.image.save_as({'data': fig2}, 'static/img/fig3.png')
+	py.image.save_as({'data': fig2}, 'static/img/fig3' + dtstr)
+	##im3 = Image.open('static/img/fig3.png')
+	im3 = Image.open('static/img/fig3' + dtstr)
 	im3 = scale_image(im3)
-	os.remove('static/img/fig333.png')
-	im3.save('static/img/fig333.png')
-
-
-
+	try:
+		##os.remove('static/img/fig333.png')
+		os.remove('static/img/fig333' + dtstr)
+	except:
+		pass
+	##im3.save('static/img/fig333.png')
+	print ("saving fig333",dtstr)
+	im3.save('static/img/fig333' + dtstr)
 
 
